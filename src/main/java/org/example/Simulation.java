@@ -17,14 +17,14 @@ public class Simulation {
     public void printBoard() {
         System.out.println("---");
         for (int y = 0; y < height; y++) {
-            String line = "|";
+            StringBuilder line = new StringBuilder("|");
             for (int x = 0; x < width; x++) {
                 if(board[x][y] == CellState.ALIVE_CELL.getState())
-                    line += "*";
+                    line.append("*");
                 else if(board[x][y] == CellState.DEAD_CELL.getState())
-                    line += ".";
+                    line.append(".");
             }
-            line += "|";
+            line.append("|");
             System.out.println(line);
         }
         System.out.println("---\n");
@@ -34,11 +34,11 @@ public class Simulation {
     public RelativeNextToBorderPosition nextToBorderPosition(int x, int y) {
 
         // checking if cell is not close to the border
-        if(!heightCoordinateNextToBorder(y) && !widthCoordinateNextToBorder(x))
+        if(heightCoordinateNotNextToBorder(y) && widthCoordinateNotNextToBorder(x))
             return RelativeNextToBorderPosition.AWAYFROMBORDERS;
 
         // checking if the cell is in the top row
-        else if(y == 0 && !widthCoordinateNextToBorder(x))
+        else if(y == 0 && widthCoordinateNotNextToBorder(x))
             return RelativeNextToBorderPosition.TOPCENTER;
         else if(y == 0 && x == 0)
             return RelativeNextToBorderPosition.TOPLEFT;
@@ -46,7 +46,7 @@ public class Simulation {
             return RelativeNextToBorderPosition.TOPRIGHT;
 
         //checking if the cell is in the bottom row
-        else if(y == (height - 1) && !widthCoordinateNextToBorder(x))
+        else if(y == (height - 1) && widthCoordinateNotNextToBorder(x))
             return RelativeNextToBorderPosition.BOTTOMCENTER;
         else if(y == (height - 1) && x == 0)
             return RelativeNextToBorderPosition.BOTTOMLEFT;
@@ -54,20 +54,20 @@ public class Simulation {
             return RelativeNextToBorderPosition.BOTTOMRIGHT;
 
         // checking if the cell is in the first of last column
-        else if(!heightCoordinateNextToBorder(y) && x == 0)
+        else if(heightCoordinateNotNextToBorder(y) && x == 0)
             return RelativeNextToBorderPosition.FIRSTCOLUMN;
-        else if(!heightCoordinateNextToBorder(y) && x == (width - 1))
+        else if(heightCoordinateNotNextToBorder(y) && x == (width - 1))
             return RelativeNextToBorderPosition.LASTCOLUMN;
 
         return RelativeNextToBorderPosition.AWAYFROMBORDERS;
     }
 
-    public boolean heightCoordinateNextToBorder(int coordinate) {
-        return coordinate == 0 || coordinate == (height - 1);
+    public boolean heightCoordinateNotNextToBorder(int coordinate) {
+        return coordinate != 0 && coordinate != (height - 1);
     }
 
-    public boolean widthCoordinateNextToBorder(int coordinate) {
-        return coordinate == 0 || coordinate == (width - 1);
+    public boolean widthCoordinateNotNextToBorder(int coordinate) {
+        return coordinate != 0 && coordinate != (width - 1);
     }
 
     public int countAliveNeighbours(int x, int y) {
@@ -185,7 +185,7 @@ public class Simulation {
 
         // creates random living cells
         // TODO refactor as a method "initializeBoard"
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 20; i++) {
             int randomCellWidth = rand.nextInt(width);
             int randomCellHeight = rand.nextInt(height);
 
@@ -196,7 +196,8 @@ public class Simulation {
 
         // updates the board checking each cell's state and changing it if needed
         // TODO refactor as a method "updateBoard"
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 100; i++) {
+            System.out.println(i + 1 + ". print");
             simulation.printBoard();
 
             for (int y = 0; y < height; y++) {
@@ -206,8 +207,6 @@ public class Simulation {
                     if (simulation.board[x][y] == CellState.DEAD_CELL.getState()) {
                         if (numberOfNeighbours == 3)
                             simulation.setToAlive(x, y);
-                        if (numberOfNeighbours == 2 || numberOfNeighbours == 3)
-                            continue;
                     }
 
                     else if(simulation.board[x][y] == CellState.ALIVE_CELL.getState()) {
@@ -217,7 +216,7 @@ public class Simulation {
                 }
             }
             try {
-                TimeUnit.SECONDS.sleep(2);
+                TimeUnit.SECONDS.sleep(1);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
