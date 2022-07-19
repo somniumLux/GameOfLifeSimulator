@@ -1,4 +1,6 @@
 package org.example;
+import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 public class Simulation {
 
@@ -133,7 +135,6 @@ public class Simulation {
         return count;
     }
 
-
     public int checkLeftUp(int x, int y) {
         return this.board[x - 1][y - 1];
     }
@@ -177,42 +178,50 @@ public class Simulation {
 
     public static void main(String[] args) {
 
-        Simulation simulation = new Simulation(12,6);
+        int width = 15;
+        int height = 6;
+        Simulation simulation = new Simulation(width,height);
+        Random rand = new Random();
 
-        // top row
-        simulation.setToAlive(0,0);
-        simulation.setToAlive(4,0);
-        simulation.setToAlive(11,0);
+        // creates random living cells
+        // TODO refactor as a method "initializeBoard"
+        for (int i = 0; i < 10; i++) {
+            int randomCellWidth = rand.nextInt(width);
+            int randomCellHeight = rand.nextInt(height);
 
-        // bottom row
-        simulation.setToAlive(4,5);
-        simulation.setToAlive(5,5);
-        simulation.setToAlive(6,5);
-        simulation.setToAlive(5,4);
-        simulation.setToAlive(4,4);
-        simulation.setToAlive(6,4);
+            simulation.setToAlive(randomCellWidth,randomCellHeight);
+        }
 
-        //middle row
-        simulation.setToAlive(4,2);
-        simulation.setToAlive(3,2);
-        simulation.setToAlive(5,2);
-        simulation.setToAlive(3,1);
-        simulation.setToAlive(4,1);
-        simulation.setToAlive(5,1);
-        simulation.setToAlive(3,3);
-        simulation.setToAlive(4,3);
-        simulation.setToAlive(5,3);
+        //simulation.printBoard();
 
-        simulation.printBoard();
+        // updates the board checking each cell's state and changing it if needed
+        // TODO refactor as a method "updateBoard"
+        for (int i = 0; i < 10; i++) {
+            simulation.printBoard();
 
-        // checks neighbours for all alive cells on the board
-        for (int y = 0; y < simulation.height; y++) {
-            for (int x = 0; x < simulation.width; x++) {
-                if(simulation.board[x][y] == CellState.ALIVE_CELL.getState())
-                    System.out.println("Alive neighbours at cell["+x+"]["+y+"] --> " + simulation.countAliveNeighbours(x,y));
+            for (int y = 0; y < height; y++) {
+                for (int x = 0; x < width; x++) {
+                    int numberOfNeighbours = simulation.countAliveNeighbours(x, y);
+
+                    if (simulation.board[x][y] == CellState.DEAD_CELL.getState()) {
+                        if (numberOfNeighbours == 3)
+                            simulation.setToAlive(x, y);
+                        if (numberOfNeighbours == 2 || numberOfNeighbours == 3)
+                            continue;
+                    }
+
+                    else if(simulation.board[x][y] == CellState.ALIVE_CELL.getState()) {
+                        if (numberOfNeighbours <= 1 || numberOfNeighbours >= 4)
+                            simulation.setToDead(x, y);
+                    }
+                }
+            }
+            try {
+                TimeUnit.SECONDS.sleep(2);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
         }
 
     }
-
 }

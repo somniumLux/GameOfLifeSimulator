@@ -13,4 +13,5 @@ public enum CellState {
     public int getState() {
         return state;
     }
+
 }
