@@ -14,6 +14,10 @@ public class Simulation {
         this.board = new int[width][height];
     }
 
+    public int getState(int x, int y) {
+        return this.board[x][y];
+    }
+
     public void printBoard() {
         System.out.println("---");
         for (int y = 0; y < height; y++) {
@@ -28,6 +32,34 @@ public class Simulation {
             System.out.println(line);
         }
         System.out.println("---\n");
+    }
+
+    // creates random living cells on the board
+    private static void initializeRandomBoard(int width, int height, Simulation simulation, Random rand) {
+        for (int i = 0; i < 20; i++) {
+            int randomCellWidth = rand.nextInt(width);
+            int randomCellHeight = rand.nextInt(height);
+            simulation.setToAlive(randomCellWidth,randomCellHeight);
+        }
+    }
+
+    // updates the board checking each cell's state
+    public static void updateBoard(int width, int height, Simulation simulation) {
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                int numberOfNeighbours = simulation.countAliveNeighbours(x, y);
+
+                if (simulation.board[x][y] == CellState.DEAD_CELL.getState()) {
+                    if (numberOfNeighbours == 3)
+                        simulation.setToAlive(x, y);
+                }
+
+                else if(simulation.board[x][y] == CellState.ALIVE_CELL.getState()) {
+                    if (numberOfNeighbours <= 1 || numberOfNeighbours >= 4)
+                        simulation.setToDead(x, y);
+                }
+            }
+        }
     }
 
     // checks position off the cell
@@ -178,49 +210,23 @@ public class Simulation {
 
     public static void main(String[] args) {
 
-        int width = 15;
-        int height = 6;
+        int width = 10;
+        int height = 10;
         Simulation simulation = new Simulation(width,height);
         Random rand = new Random();
 
-        // creates random living cells
-        // TODO refactor as a method "initializeBoard"
-        for (int i = 0; i < 20; i++) {
-            int randomCellWidth = rand.nextInt(width);
-            int randomCellHeight = rand.nextInt(height);
+        initializeRandomBoard(width, height, simulation, rand);
 
-            simulation.setToAlive(randomCellWidth,randomCellHeight);
-        }
-
-        //simulation.printBoard();
-
-        // updates the board checking each cell's state and changing it if needed
-        // TODO refactor as a method "updateBoard"
         for (int i = 0; i < 100; i++) {
             System.out.println(i + 1 + ". print");
             simulation.printBoard();
+            updateBoard(width, height, simulation);
 
-            for (int y = 0; y < height; y++) {
-                for (int x = 0; x < width; x++) {
-                    int numberOfNeighbours = simulation.countAliveNeighbours(x, y);
-
-                    if (simulation.board[x][y] == CellState.DEAD_CELL.getState()) {
-                        if (numberOfNeighbours == 3)
-                            simulation.setToAlive(x, y);
-                    }
-
-                    else if(simulation.board[x][y] == CellState.ALIVE_CELL.getState()) {
-                        if (numberOfNeighbours <= 1 || numberOfNeighbours >= 4)
-                            simulation.setToDead(x, y);
-                    }
-                }
-            }
             try {
                 TimeUnit.SECONDS.sleep(1);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
-
     }
 }
