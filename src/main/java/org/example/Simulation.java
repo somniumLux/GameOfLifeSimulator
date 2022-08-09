@@ -35,31 +35,56 @@ public class Simulation {
     }
 
     // creates random living cells on the board
-    private static void initializeRandomBoard(int width, int height, Simulation simulation, Random rand) {
+    void initializeRandomBoard(int width, int height) {
+        int[][] initializedBoard = new int[width][height];
+        Random rand = new Random();
+
         for (int i = 0; i < 20; i++) {
             int randomCellWidth = rand.nextInt(width);
             int randomCellHeight = rand.nextInt(height);
-            simulation.setToAlive(randomCellWidth,randomCellHeight);
+            initializedBoard[randomCellWidth][randomCellHeight] = CellState.ALIVE_CELL.getState();
         }
+        this.board = initializedBoard;
     }
 
     // updates the board checking each cell's state
-    public static void updateBoard(int width, int height, Simulation simulation) {
+    public void updateBoard(int width, int height, Simulation simulation) {
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
-                int numberOfNeighbours = simulation.countAliveNeighbours(x, y);
+                int numberOfAliveNeighbours = countAliveNeighbours(x,y);
 
                 if (simulation.board[x][y] == CellState.DEAD_CELL.getState()) {
-                    if (numberOfNeighbours == 3)
+                    if (numberOfAliveNeighbours == 3)
                         simulation.setToAlive(x, y);
                 }
 
                 else if(simulation.board[x][y] == CellState.ALIVE_CELL.getState()) {
-                    if (numberOfNeighbours <= 1 || numberOfNeighbours >= 4)
+                    if (numberOfAliveNeighbours <= 1 || numberOfAliveNeighbours >= 4)
                         simulation.setToDead(x, y);
                 }
             }
         }
+    }
+
+    public void step() {
+        int[][] updatedBoard = new int[width][height];
+
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                int numberOfAliveNeighbours = countAliveNeighbours(x,y);
+
+                if(this.board[x][y] == CellState.DEAD_CELL.getState()) {
+                    if(numberOfAliveNeighbours == 3)
+                        updatedBoard[x][y] = CellState.ALIVE_CELL.getState();
+                }
+
+                else if(this.board[x][y] == CellState.ALIVE_CELL.getState()) {
+                    if (numberOfAliveNeighbours <= 1 || numberOfAliveNeighbours >= 4)
+                        updatedBoard[x][y] = CellState.DEAD_CELL.getState();
+                }
+            }
+        }
+        this.board = updatedBoard;
     }
 
     // checks position off the cell
@@ -210,17 +235,17 @@ public class Simulation {
 
     public static void main(String[] args) {
 
-        int width = 10;
-        int height = 10;
+        int width = 15;
+        int height = 6;
         Simulation simulation = new Simulation(width,height);
-        Random rand = new Random();
+        // Random rand = new Random();
 
-        initializeRandomBoard(width, height, simulation, rand);
+        simulation.initializeRandomBoard(width, height);
 
         for (int i = 0; i < 100; i++) {
             System.out.println(i + 1 + ". print");
             simulation.printBoard();
-            updateBoard(width, height, simulation);
+            simulation.updateBoard(width, height, simulation);
 
             try {
                 TimeUnit.SECONDS.sleep(1);

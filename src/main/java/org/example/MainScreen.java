@@ -7,35 +7,45 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.transform.Affine;
 
-import java.util.Random;
-
 public class MainScreen extends VBox {
 
-    private final Canvas canvas;
-    private final Affine affine;
-    private final Simulation simulation;
+    private Canvas canvas;
+    private Affine affine;
+    public Simulation simulation;
 
 
     public MainScreen() {
-        Button button = new Button("step");
-        this.canvas = new Canvas(400,400);
-        this.getChildren().addAll(button,this.canvas);
-        this.affine = new Affine();
-        this.affine.appendScale(400 / 10f, 400 / 10f);
         int height = 10;
         int width = 10;
         this.simulation = new Simulation(width, height);
 
-        initializeRandomBoard(width, height, simulation);
-    }
+        Button stepButton = new Button("step");
+        stepButton.setOnAction(actionEvent -> {
+            simulation.step();
+            draw();
+        });
 
-    private static void initializeRandomBoard(int width, int height, Simulation simulation) {
-        Random rand = new Random();
-        for (int i = 0; i < 20; i++) {
-            int randomCellWidth = rand.nextInt(width);
-            int randomCellHeight = rand.nextInt(height);
-            simulation.setToAlive(randomCellWidth,randomCellHeight);
-        }
+        Button generateBoardButton = new Button("generate");
+        generateBoardButton.setOnAction(actionEvent -> {
+            simulation.initializeRandomBoard(width, height);
+            draw();
+
+            System.out.println("---------------------------------");
+            for (int x = 0; x < width; x++) {
+                System.out.print("[ ");
+                for (int y = 0; y < height; y++) {
+                    System.out.print(" " + simulation.board[x][y] + ", ");
+                }
+                System.out.println(" ]");
+            }
+        });
+
+        this.canvas = new Canvas(400,400);
+        this.getChildren().addAll(stepButton,generateBoardButton,this.canvas);
+        this.affine = new Affine();
+        this.affine.appendScale(400 / 10f, 400 / 10f);
+
+        simulation.initializeRandomBoard(width, height);
     }
 
     public void draw() {
