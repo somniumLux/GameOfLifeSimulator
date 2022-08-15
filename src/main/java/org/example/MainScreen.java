@@ -1,11 +1,14 @@
 package org.example;
 
+import javafx.geometry.Point2D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.transform.Affine;
+import javafx.scene.transform.NonInvertibleTransformException;
 
 public class MainScreen extends VBox {
 
@@ -13,6 +16,8 @@ public class MainScreen extends VBox {
     private Affine affine;
     public Simulation simulation;
 
+    /*This comment serves just for testing git bash for the
+    * first time (trying git commit and git push to GitHub)*/
 
     public MainScreen() {
         int height = 10;
@@ -29,18 +34,11 @@ public class MainScreen extends VBox {
         generateBoardButton.setOnAction(actionEvent -> {
             simulation.initializeRandomBoard(width, height);
             draw();
-
-            System.out.println("---------------------------------");
-            for (int x = 0; x < width; x++) {
-                System.out.print("[ ");
-                for (int y = 0; y < height; y++) {
-                    System.out.print(" " + simulation.board[x][y] + ", ");
-                }
-                System.out.println(" ]");
-            }
         });
 
         this.canvas = new Canvas(400,400);
+        this.setOnMousePressed(this::handleDraw);
+
         this.getChildren().addAll(stepButton,generateBoardButton,this.canvas);
         this.affine = new Affine();
         this.affine.appendScale(400 / 10f, 400 / 10f);
@@ -48,12 +46,31 @@ public class MainScreen extends VBox {
         simulation.initializeRandomBoard(width, height);
     }
 
+    private void handleDraw(MouseEvent mouseEvent) {
+        double mouseX = mouseEvent.getX();
+        double mouseY = mouseEvent.getY();
+
+        System.out.println(mouseX + ", " + mouseY);
+
+        try {
+            Point2D simCoordinates = this.affine.inverseTransform(mouseX, mouseY);
+
+            int simX = (int) simCoordinates.getX();
+            int simY = (int) simCoordinates.getY();
+
+            System.out.println(simX + ", " + simY);
+
+        } catch (NonInvertibleTransformException e) {
+            System.out.println("Could not invert transform");
+        }
+    }
+
     public void draw() {
         GraphicsContext graphicsContext = this.canvas.getGraphicsContext2D();
         graphicsContext.setTransform(this.affine);
 
         graphicsContext.setFill(Color.LIGHTBLUE);
-        graphicsContext.fillRect(0,0,400,400);
+        graphicsContext.fillRect(0,0,450,450);
 
         graphicsContext.setFill(Color.DARKBLUE);
         for (int x = 0; x < this.simulation.width; x++) {

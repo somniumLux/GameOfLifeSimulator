@@ -39,7 +39,7 @@ public class Simulation {
         int[][] initializedBoard = new int[width][height];
         Random rand = new Random();
 
-        for (int i = 0; i < 20; i++) {
+        for (int i = 0; i < 23; i++) {
             int randomCellWidth = rand.nextInt(width);
             int randomCellHeight = rand.nextInt(height);
             initializedBoard[randomCellWidth][randomCellHeight] = CellState.ALIVE_CELL.getState();
@@ -235,10 +235,9 @@ public class Simulation {
 
     public static void main(String[] args) {
 
-        int width = 15;
-        int height = 6;
+        int width = 10;
+        int height = 10;
         Simulation simulation = new Simulation(width,height);
-        // Random rand = new Random();
 
         simulation.initializeRandomBoard(width, height);
 
