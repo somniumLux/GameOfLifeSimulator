@@ -14,46 +14,47 @@ public class MainScreen extends VBox {
 
     private Canvas canvas;
     private Affine affine;
-    public Simulation simulation;
-
-    /*This comment serves just for testing git bash for the
-    * first time (trying git commit and git push to GitHub)*/
+    private Simulation simulation;
 
     public MainScreen() {
-        int height = 10;
-        int width = 10;
-        this.simulation = new Simulation(width, height);
+
+        int simulationWidth = 10, simulationHeight = 10;
+        double canvasWidth = 400, canvasHeight = 400;
 
         Button stepButton = new Button("step");
         stepButton.setOnAction(actionEvent -> {
             simulation.step();
             draw();
-        });
+            }
+        );
 
-        Button generateBoardButton = new Button("generate");
-        generateBoardButton.setOnAction(actionEvent -> {
-            simulation.initializeRandomBoard(width, height);
+        Button generateRandomButton = new Button("generate");
+        generateRandomButton.setOnAction(actionEvent -> {
+            simulation.initializeRandomBoard();
             draw();
         });
 
-        this.canvas = new Canvas(400,400);
-        this.setOnMousePressed(this::handleDraw);
+        this.canvas = new Canvas(canvasWidth, canvasHeight);
+        this.canvas.setOnMousePressed(this::handleDraw);
 
-        this.getChildren().addAll(stepButton,generateBoardButton,this.canvas);
+        this.getChildren().addAll(stepButton,generateRandomButton,this.canvas);
+
         this.affine = new Affine();
-        this.affine.appendScale(400 / 10f, 400 / 10f);
+        this.affine.appendScale(canvasWidth / (double) simulationWidth, canvasHeight / (double) simulationHeight);
 
-        simulation.initializeRandomBoard(width, height);
+        this.simulation = new Simulation(simulationWidth,simulationHeight);
+        this.simulation.initializeRandomBoard();
     }
 
     private void handleDraw(MouseEvent mouseEvent) {
         double mouseX = mouseEvent.getX();
         double mouseY = mouseEvent.getY();
 
-        System.out.println(mouseX + ", " + mouseY);
+        //System.out.println(mouseX + ", " + mouseY);
 
         try {
             Point2D simCoordinates = this.affine.inverseTransform(mouseX, mouseY);
+            System.out.println(simCoordinates);
 
             int simX = (int) simCoordinates.getX();
             int simY = (int) simCoordinates.getY();
@@ -83,13 +84,11 @@ public class MainScreen extends VBox {
 
         graphicsContext.setStroke(Color.LIGHTSKYBLUE);
         graphicsContext.setLineWidth(0.05);
-        for (int x = 0; x <= this.simulation.width; x++) {
+        for (int x = 0; x <= this.simulation.width; x++)
             graphicsContext.strokeLine(x,0,x,10);
-        }
-        for (int y = 0; y <= this.simulation.height; y++) {
-            graphicsContext.strokeLine(0, y, 10, y);
-        }
 
+        for (int y = 0; y <= this.simulation.height; y++)
+            graphicsContext.strokeLine(0, y, 10, y);
     }
 
 }

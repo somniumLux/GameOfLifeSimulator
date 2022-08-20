@@ -35,7 +35,7 @@ public class Simulation {
     }
 
     // creates random living cells on the board
-    void initializeRandomBoard(int width, int height) {
+    void initializeRandomBoard() {
         int[][] initializedBoard = new int[width][height];
         Random rand = new Random();
 
@@ -239,7 +239,7 @@ public class Simulation {
         int height = 10;
         Simulation simulation = new Simulation(width,height);
 
-        simulation.initializeRandomBoard(width, height);
+        simulation.initializeRandomBoard();
 
         for (int i = 0; i < 100; i++) {
             System.out.println(i + 1 + ". print");
