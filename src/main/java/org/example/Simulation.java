@@ -226,11 +226,21 @@ public class Simulation {
 
 
     public void setToAlive(int x, int y) {
-        this.board[x][y] = CellState.ALIVE_CELL.getState();
+        this.setState(x, y, CellState.ALIVE_CELL.getState());
     }
 
     public void setToDead(int x, int y) {
-        this.board[x][y] = CellState.DEAD_CELL.getState();
+        this.setState(x, y, CellState.DEAD_CELL.getState());
+    }
+
+    public void setState(int x, int y, int state) {
+        if(x < 0 || x >= width)
+            return;
+
+        if(y < 0 || y >= height)
+            return;
+
+        this.board[x][y] = state;
     }
 
     public static void main(String[] args) {

@@ -4,6 +4,8 @@ import javafx.geometry.Point2D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -15,6 +17,7 @@ public class MainScreen extends VBox {
     private Canvas canvas;
     private Affine affine;
     private Simulation simulation;
+    private int drawMode = 1;
 
     public MainScreen() {
 
@@ -25,8 +28,7 @@ public class MainScreen extends VBox {
         stepButton.setOnAction(actionEvent -> {
             simulation.step();
             draw();
-            }
-        );
+        });
 
         Button generateRandomButton = new Button("generate");
         generateRandomButton.setOnAction(actionEvent -> {
@@ -36,6 +38,9 @@ public class MainScreen extends VBox {
 
         this.canvas = new Canvas(canvasWidth, canvasHeight);
         this.canvas.setOnMousePressed(this::handleDraw);
+        this.canvas.setOnMouseDragged(this::handleDraw);
+
+        this.setOnKeyPressed(this::onKeyPressed);
 
         this.getChildren().addAll(stepButton,generateRandomButton,this.canvas);
 
@@ -50,20 +55,29 @@ public class MainScreen extends VBox {
         double mouseX = mouseEvent.getX();
         double mouseY = mouseEvent.getY();
 
-        //System.out.println(mouseX + ", " + mouseY);
-
         try {
             Point2D simCoordinates = this.affine.inverseTransform(mouseX, mouseY);
-            System.out.println(simCoordinates);
 
             int simX = (int) simCoordinates.getX();
             int simY = (int) simCoordinates.getY();
+            //System.out.println(simX + ", " + simY);
 
-            System.out.println(simX + ", " + simY);
+            this.simulation.setState(simX, simY, drawMode);
+            draw();
 
         } catch (NonInvertibleTransformException e) {
             System.out.println("Could not invert transform");
         }
+    }
+
+    private void onKeyPressed(KeyEvent keyEvent) {
+
+        if(keyEvent.getCode() == KeyCode.D) {
+            this.drawMode = 1;
+        } else if(keyEvent.getCode() == KeyCode.E) {
+            this.drawMode = 0;
+        }
+
     }
 
     public void draw() {
