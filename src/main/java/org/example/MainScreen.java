@@ -24,12 +24,6 @@ public class MainScreen extends VBox {
         int simulationWidth = 10, simulationHeight = 10;
         double canvasWidth = 400, canvasHeight = 400;
 
-        Button stepButton = new Button("step");
-        stepButton.setOnAction(actionEvent -> {
-            simulation.step();
-            draw();
-        });
-
         Button generateRandomButton = new Button("generate");
         generateRandomButton.setOnAction(actionEvent -> {
             simulation.initializeRandomBoard();
@@ -42,7 +36,10 @@ public class MainScreen extends VBox {
 
         this.setOnKeyPressed(this::onKeyPressed);
 
-        this.getChildren().addAll(stepButton,generateRandomButton,this.canvas);
+        Toolbar toolbar = new Toolbar();
+
+        //this.getChildren().addAll(toolbar,generateRandomButton,this.canvas);
+        this.getChildren().addAll(toolbar,this.canvas);
 
         this.affine = new Affine();
         this.affine.appendScale(canvasWidth / (double) simulationWidth, canvasHeight / (double) simulationHeight);
