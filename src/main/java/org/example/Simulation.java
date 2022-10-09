@@ -35,7 +35,7 @@ public class Simulation {
     }
 
     // creates random living cells on the board
-    void initializeRandomBoard() {
+    void initializeRandomizedBoard() {
         int[][] initializedBoard = new int[width][height];
         Random rand = new Random();
 
@@ -55,12 +55,12 @@ public class Simulation {
 
                 if (simulation.board[x][y] == CellState.DEAD_CELL.getState()) {
                     if (numberOfAliveNeighbours == 3)
-                        simulation.setToAlive(x, y);
+                        simulation.setToAlive(x,y);
                 }
 
                 else if(simulation.board[x][y] == CellState.ALIVE_CELL.getState()) {
                     if (numberOfAliveNeighbours <= 1 || numberOfAliveNeighbours >= 4)
-                        simulation.setToDead(x, y);
+                        simulation.setToDead(x,y);
                 }
             }
         }
@@ -249,7 +249,7 @@ public class Simulation {
         int height = 10;
         Simulation simulation = new Simulation(width,height);
 
-        simulation.initializeRandomBoard();
+        simulation.initializeRandomizedBoard();
 
         for (int i = 0; i < 100; i++) {
             System.out.println(i + 1 + ". print");

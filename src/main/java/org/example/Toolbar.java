@@ -6,7 +6,9 @@ import javafx.scene.control.ToolBar;
 
 public class Toolbar extends ToolBar {
 
-    public Toolbar() {
+    private MainScreen mainScreen;
+
+    public Toolbar(MainScreen mainScreen) {
         Button draw = new Button("Draw");
         draw.setOnAction(this::handleDraw);
         Button erase = new Button("Erase");
@@ -19,7 +21,6 @@ public class Toolbar extends ToolBar {
         this.getItems().addAll(draw,erase,step,generate);
     }
 
-    // TODO add actions
     private void handleDraw(ActionEvent actionEvent) {
         System.out.println("Draw pressed");
     }
@@ -30,6 +31,8 @@ public class Toolbar extends ToolBar {
 
     private void handleStep(ActionEvent actionEvent) {
         System.out.println("Step pressed");
+        this.mainScreen.getSimulation().step();
+        this.mainScreen.draw();
     }
 
     private void handleGenerate(ActionEvent actionEvent) {

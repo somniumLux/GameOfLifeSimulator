@@ -19,6 +19,10 @@ public class MainScreen extends VBox {
     private Simulation simulation;
     private int drawMode = 1;
 
+    public Simulation getSimulation() {
+        return simulation;
+    }
+
     public MainScreen() {
 
         int simulationWidth = 10, simulationHeight = 10;
@@ -26,26 +30,25 @@ public class MainScreen extends VBox {
 
         Button generateRandomButton = new Button("generate");
         generateRandomButton.setOnAction(actionEvent -> {
-            simulation.initializeRandomBoard();
+            simulation.initializeRandomizedBoard();
             draw();
         });
 
-        this.canvas = new Canvas(canvasWidth, canvasHeight);
+        this.canvas = new Canvas(canvasWidth,canvasHeight);
         this.canvas.setOnMousePressed(this::handleDraw);
         this.canvas.setOnMouseDragged(this::handleDraw);
 
         this.setOnKeyPressed(this::onKeyPressed);
 
-        Toolbar toolbar = new Toolbar();
+        Toolbar toolbar = new Toolbar(this);
 
-        //this.getChildren().addAll(toolbar,generateRandomButton,this.canvas);
         this.getChildren().addAll(toolbar,this.canvas);
 
         this.affine = new Affine();
         this.affine.appendScale(canvasWidth / (double) simulationWidth, canvasHeight / (double) simulationHeight);
 
         this.simulation = new Simulation(simulationWidth,simulationHeight);
-        this.simulation.initializeRandomBoard();
+        //this.simulation.initializeRandomBoard();
     }
 
     private void handleDraw(MouseEvent mouseEvent) {
@@ -57,7 +60,6 @@ public class MainScreen extends VBox {
 
             int simX = (int) simCoordinates.getX();
             int simY = (int) simCoordinates.getY();
-            //System.out.println(simX + ", " + simY);
 
             this.simulation.setState(simX, simY, drawMode);
             draw();
