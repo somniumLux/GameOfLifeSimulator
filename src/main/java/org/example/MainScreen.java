@@ -40,6 +40,7 @@ public class MainScreen extends VBox {
 
         this.setOnKeyPressed(this::onKeyPressed);
 
+        // TODO Toolbar causes NullPointerException
         Toolbar toolbar = new Toolbar(this);
 
         this.getChildren().addAll(toolbar,this.canvas);
